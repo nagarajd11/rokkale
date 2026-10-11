@@ -1,0 +1,96 @@
+[
+  {
+    "id": "ROOM-9142",
+    "name": "Apartment Friends Ledger",
+    "category": "Shared Expenses",
+    "members": [
+      {
+        "id": "m_rahul",
+        "name": "Rahul",
+        "upi": "rahul@okhdfcbank",
+        "phone": "+91 98765 11111",
+        "color": "#10b981"
+      },
+      {
+        "id": "m_aryan",
+        "name": "Aryan",
+        "upi": "aryan@paytm",
+        "phone": "+91 98765 22222",
+        "color": "#3b82f6"
+      },
+      {
+        "id": "m_vikram",
+        "name": "Vikram",
+        "upi": "vikram@upi",
+        "phone": "+91 98765 33333",
+        "color": "#8b5cf6"
+      },
+      {
+        "id": "m_sneha",
+        "name": "Sneha",
+        "upi": "sneha@oksbi",
+        "phone": "+91 98765 44444",
+        "color": "#ec4899"
+      }
+    ],
+    "transactions": [
+      {
+        "id": "tx_101",
+        "lenderId": "m_rahul",
+        "borrowerId": "m_aryan",
+        "amount": 650,
+        "description": "Swiggy Dinner Order 🍕",
+        "status": "active",
+        "createdAt": "2026-10-11T17:00:00.000Z",
+        "settledAt": null,
+        "settledBy": null,
+        "method": "",
+        "note": ""
+      },
+      {
+        "id": "tx_102",
+        "lenderId": "m_vikram",
+        "borrowerId": "m_rahul",
+        "amount": 400,
+        "description": "Cab to Airport 🚗",
+        "status": "awaiting_confirmation",
+        "createdAt": "2026-10-11T19:00:00.000Z",
+        "settledAt": null,
+        "settledBy": null,
+        "method": "UPI",
+        "note": "Rahul reported payment sent via GPay"
+      }
+    ],
+    "createdAt": "2026-10-11T16:00:00.000Z"
+  },
+  {
+    "id": "ROOM-7788",
+    "name": "Goa Friends Trip",
+    "category": "Trip",
+    "members": [
+      {
+        "id": "m_1",
+        "name": "Kabir",
+        "upi": "kabir@upi",
+        "phone": "",
+        "color": "#10b981"
+      },
+      {
+        "id": "m_2",
+        "name": "Rhea",
+        "upi": "rhea@oksbi",
+        "phone": "",
+        "color": "#3b82f6"
+      },
+      {
+        "id": "m_20026",
+        "name": "Armaan",
+        "upi": "armaan@okhdfcbank",
+        "phone": "",
+        "color": "#8b5cf6"
+      }
+    ],
+    "transactions": [],
+    "createdAt": "2026-10-11T17:00:00Z"
+  }
+]

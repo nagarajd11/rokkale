@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RokkaLE — Friends Money & Lending Ledger</title>
+  <meta name="description" content="RokkaLE - Track money lent, verify repayments in Rupees, and settle balances with lender confirmation.">
+  
+  <!-- PWA & Mobile App Support -->
+  <link rel="manifest" href="manifest.json?v=4">
+  <link rel="icon" type="image/png" href="app-icon.png?v=4">
+  <link rel="apple-touch-icon" href="icon-512.png?v=4">
+  <meta name="theme-color" content="#10b981">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="RokkaLE">
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="styles.css?v=4">
+</head>
+<body>
+  <div class="app-layout">
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-container">
+        <div class="brand">
+          <div class="brand-icon">
+            <img src="app-icon.png?v=4" alt="RokkaLE App Icon" class="brand-app-img">
+          </div>
+          <div>
+            <div class="brand-title-wrap">
+              <h1 class="brand-title">RokkaLE</h1>
+              <span class="live-pill" title="Synchronized live across room members">
+                <span class="pulse-dot"></span> Private Room Active
+              </span>
+            </div>
+            <p class="brand-subtitle">Friends Peer-to-Peer Ledger</p>
+          </div>
+        </div>
+
+        <!-- Room Controls & User Identity -->
+        <div class="header-actions">
+          <div class="room-code-tag" id="roomCodePill" title="Click to copy Room Code">
+            <span class="room-icon">🔑</span>
+            <span class="room-id" id="roomCodeDisplay">ROOM-9142</span>
+            <button class="btn-copy-code" id="copyRoomCodeBtn" title="Copy Room Invite Link">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            </button>
+          </div>
+
+          <!-- Active User Profile Switcher -->
+          <div class="user-identity-box">
+            <label class="user-label">You are:</label>
+            <div class="user-select-wrap">
+              <select id="activeUserSelect" class="user-select-dropdown" title="Select which friend you are viewing as">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+
+          <button id="headerCreateRoomBtn" class="btn btn-primary btn-sm" title="Create New Friends Room">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+            <span>Create Room</span>
+          </button>
+
+          <button id="headerJoinRoomBtn" class="btn btn-secondary btn-sm" title="Join Room with Code">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+            <span>Join Room</span>
+          </button>
+
+          <button id="roomManageBtn" class="btn btn-ghost btn-sm" title="Switch or Manage Rooms">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            <span>Rooms</span>
+          </button>
+
+          <button id="installAppBtn" class="btn btn-primary btn-sm" title="Install RokkaLE as standalone app on phone or PC">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Install</span>
+          </button>
+
+          <button id="themeToggleBtn" class="btn-icon" title="Toggle Theme" aria-label="Toggle Theme">
+            <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-main">
+      <!-- ROOM HERO BANNER -->
+      <section class="room-hero-card">
+        <div class="room-hero-top">
+          <div>
+            <span class="room-badge-pill" id="roomCategoryBadge">Private Room</span>
+            <h2 class="room-title" id="roomTitleDisplay">Apartment Friends Ledger</h2>
+            <p class="room-desc" id="roomSubtitleDisplay">All expenses and peer lending between friends</p>
+          </div>
+
+          <!-- Members Stack -->
+          <div class="members-stack-wrap">
+            <span class="members-stack-label">Room Friends (<span id="memberCountLabel">4</span>):</span>
+            <div class="avatar-stack" id="membersAvatarStack">
+              <!-- Populated by JS -->
+            </div>
+            <button class="btn btn-sm btn-outline" id="addFriendToRoomBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Add Friend</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Room Action & Share Bar -->
+        <div class="room-action-bar">
+          <div class="room-code-badge-group">
+            <span class="room-code-label">Room Code:</span>
+            <span class="room-code-tag-large" id="roomCodeBadgeHero">ROOM-9142</span>
+            <button class="btn btn-sm btn-ghost" id="heroCopyCodeBtn" title="Copy Room Code">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+              <span>Copy Code</span>
+            </button>
+            <button class="btn btn-sm btn-outline" id="heroShareLinkBtn" title="Copy Invite Link for Friends">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+              <span>Share Link</span>
+            </button>
+            <button class="btn btn-sm btn-success" id="heroWhatsAppBtn" title="Send WhatsApp Invite">
+              <span>💬 Invite on WhatsApp</span>
+            </button>
+          </div>
+
+          <div class="room-quick-buttons">
+            <button class="btn btn-sm btn-primary" id="heroCreateRoomBtn">
+              <span>➕ New Room</span>
+            </button>
+            <button class="btn btn-sm btn-secondary" id="heroJoinRoomBtn">
+              <span>🔑 Join Room</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Personal Standing Overview in Rupees -->
+        <div class="personal-standing-grid">
+          <div class="standing-card card-lent">
+            <div class="standing-header">
+              <span class="standing-icon">💸</span>
+              <span class="standing-title">You Are Owed (To Collect)</span>
+            </div>
+            <div class="standing-amount text-green" id="myOwedToMeAmount">₹0</div>
+            <p class="standing-sub" id="myOwedToMeSub">Friends owe this to you</p>
+          </div>
+
+          <div class="standing-card card-borrowed">
+            <div class="standing-header">
+              <span class="standing-icon">🤝</span>
+              <span class="standing-title">You Owe (To Pay Back)</span>
+            </div>
+            <div class="standing-amount text-red" id="myYouOweAmount">₹0</div>
+            <p class="standing-sub" id="myYouOweSub">You owe this to friends</p>
+          </div>
+
+          <div class="standing-card card-net" id="myNetStandingCard">
+            <div class="standing-header">
+              <span class="standing-icon">⚖️</span>
+              <span class="standing-title">Your Net Standing</span>
+            </div>
+            <div class="standing-amount" id="myNetStandingAmount">₹0</div>
+            <p class="standing-sub" id="myNetStandingSub">Overall balance</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- RECORD MONEY LENT FORM -->
+      <section class="record-card">
+        <div class="card-header-row">
+          <div>
+            <h3>Record Money Lent</h3>
+            <p class="text-subtle">Log money lent to a friend. <strong>Only the person who lent the money can verify & settle it later.</strong></p>
+          </div>
+          <div class="rule-badge" title="Security & Trust Rule">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>Lender Verification Rule Enforced</span>
+          </div>
+        </div>
+
+        <form id="recordLendingForm" class="lending-form">
+          <div class="lending-form-grid">
+            <!-- 1. Who Lent (Creditor) -->
+            <div class="form-group">
+              <label for="lenderSelect">Who Lent the Money? <span class="required">*</span></label>
+              <select id="lenderSelect" class="form-control" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <!-- 2. Who Borrowed (Debtor) -->
+            <div class="form-group">
+              <label for="borrowerSelect">Who Borrowed / Received? <span class="required">*</span></label>
+              <select id="borrowerSelect" class="form-control" required>
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+
+            <!-- 3. Amount in Rupees -->
+            <div class="form-group">
+              <label for="lendingAmount">Amount (₹) <span class="required">*</span></label>
+              <div class="input-rupee-wrap">
+                <span class="input-rupee-symbol">₹</span>
+                <input type="number" id="lendingAmount" class="form-control rupee-control" min="1" step="any" placeholder="0" required>
+              </div>
+            </div>
+
+            <!-- 4. Description / Reason -->
+            <div class="form-group desc-group">
+              <label for="lendingDesc">Reason / Description <span class="required">*</span></label>
+              <input type="text" id="lendingDesc" class="form-control" placeholder="e.g. Swiggy dinner, Concert pass, Cab ride, Rent contribution, Groceries..." required>
+            </div>
+          </div>
+
+          <!-- Quick presets for reasons & instant amounts -->
+          <div class="quick-helpers-row">
+            <div class="helper-presets">
+              <span class="helper-label">Quick Reason:</span>
+              <button type="button" class="tag-chip" data-preset="Dinner / Food 🍕">🍕 Food</button>
+              <button type="button" class="tag-chip" data-preset="Cab / Travel 🚗">🚗 Travel</button>
+              <button type="button" class="tag-chip" data-preset="Rent / WiFi 🏠">🏠 Rent</button>
+              <button type="button" class="tag-chip" data-preset="Groceries / Supermarket 🛒">🛒 Groceries</button>
+              <button type="button" class="tag-chip" data-preset="Emergency Cash 💵">💵 Cash</button>
+              <button type="button" class="tag-chip" data-preset="Movie / Event 🎬">🎬 Entertainment</button>
+            </div>
+
+            <div class="helper-amounts">
+              <span class="helper-label">Tap Amount:</span>
+              <button type="button" class="amt-chip" data-amt="50">+₹50</button>
+              <button type="button" class="amt-chip" data-amt="100">+₹100</button>
+              <button type="button" class="amt-chip" data-amt="250">+₹250</button>
+              <button type="button" class="amt-chip" data-amt="500">+₹500</button>
+              <button type="button" class="amt-chip" data-amt="1000">+₹1,000</button>
+              <button type="button" class="amt-chip" data-amt="2000">+₹2,000</button>
+              <button type="button" class="amt-chip" data-amt="5000">+₹5,000</button>
+            </div>
+          </div>
+
+          <div class="form-action-footer">
+            <button type="submit" class="btn btn-primary btn-record">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              <span>Record Money Lent</span>
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- FRIENDS BALANCES MATRIX -->
+      <section class="balances-card">
+        <div class="balances-header">
+          <div>
+            <h3>Friends Balances Breakdown</h3>
+            <p class="text-subtle">Summary of who owes whom in this private room</p>
+          </div>
+          <button class="btn btn-ghost btn-sm" id="whatsappSummaryBtn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            <span>Share on WhatsApp</span>
+          </button>
+        </div>
+
+        <div class="balances-grid" id="balancesCardsGrid">
+          <!-- Populated by JS -->
+        </div>
+      </section>
+
+      <!-- TRANSACTIONS TIMELINE & LENDER-SETTLEMENT ENGINE -->
+      <section class="timeline-card">
+        <div class="timeline-header-bar">
+          <div class="timeline-title-wrap">
+            <h3>Transactions Timeline</h3>
+            <span class="count-tag" id="timelineCountTag">0 records</span>
+          </div>
+
+          <div class="timeline-filters">
+            <div class="search-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="txSearchInput" placeholder="Filter by friend, description, amount...">
+            </div>
+
+            <div class="filter-chips">
+              <button class="filter-chip active" data-filter="all">All</button>
+              <button class="filter-chip" data-filter="unsettled">Unsettled ⏳</button>
+              <button class="filter-chip" data-filter="awaiting">Awaiting Confirmation 🟡</button>
+              <button class="filter-chip" data-filter="settled">Settled ✓</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Transactions Stream List -->
+        <div class="tx-timeline-list" id="txTimelineList">
+          <!-- Dynamically populated by app.js -->
+        </div>
+
+        <!-- Empty state -->
+        <div class="empty-timeline hidden" id="emptyTimeline">
+          <div class="empty-icon">🤝</div>
+          <h3>No Transactions Yet</h3>
+          <p>Record your first lent transaction above to track balances with your friends.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- 1. SETTLE CONFIRMATION MODAL (ONLY ACCESSIBLE BY LENDER) -->
+  <div class="modal-backdrop hidden" id="lenderSettleModal">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3>Confirm Payment & Settle</h3>
+        <button class="modal-close" id="closeLenderSettleBtn">&times;</button>
+      </div>
+
+      <form id="lenderSettleForm" class="modal-form">
+        <input type="hidden" id="settleTxId" value="">
+
+        <div class="lender-verification-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <div>
+            <strong>Lender Verification Required</strong>
+            <small>As the lender, you are confirming that you have received this payment.</small>
+          </div>
+        </div>
+
+        <div class="settle-summary-box">
+          <div class="settle-summary-text" id="settlePromptSummary">Aryan owes you for Dinner</div>
+          <div class="settle-amount-display" id="settleAmountPrompt">₹0</div>
+        </div>
+
+        <div class="form-group">
+          <label for="settleReceivedAmount">Amount Received (₹) <span class="required">*</span></label>
+          <div class="input-rupee-wrap">
+            <span class="input-rupee-symbol">₹</span>
+            <input type="number" id="settleReceivedAmount" class="form-control" min="1" step="any" required>
+          </div>
+          <small class="text-subtle">You can settle the full amount or record a partial repayment.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="settlePaymentMethod">Received Via</label>
+          <select id="settlePaymentMethod" class="form-control">
+            <option value="UPI (GPay / PhonePe / Paytm)" selected>📲 UPI (GPay / PhonePe / Paytm)</option>
+            <option value="Cash">💵 Cash</option>
+            <option value="Bank Transfer">🏦 Bank Transfer</option>
+            <option value="Other">✨ Other</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="settleNote">Settlement Note (Optional)</label>
+          <input type="text" id="settleNote" class="form-control" placeholder="e.g. Received via GPay, Settled at dinner">
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelLenderSettleBtn">Cancel</button>
+          <button type="submit" class="btn btn-success">Confirm Received & Settle ✓</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 2. BORROWER NOTIFY / UPI PAY MODAL -->
+  <div class="modal-backdrop hidden" id="borrowerPayModal">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3>Pay Lender via UPI</h3>
+        <button class="modal-close" id="closeBorrowerPayBtn">&times;</button>
+      </div>
+
+      <div class="borrower-pay-body">
+        <div class="pay-summary-box">
+          <p class="pay-prompt" id="borrowerPayPrompt">Pay Lender</p>
+          <div class="pay-amount-highlight" id="borrowerPayAmount">₹0</div>
+        </div>
+
+        <div class="upi-qr-box">
+          <div class="qr-code-frame" id="payQrFrame">
+            <!-- Simulated UPI QR -->
+            <svg viewBox="0 0 100 100">
+              <rect width="100" height="100" fill="#ffffff" rx="6"/>
+              <rect x="8" y="8" width="24" height="24" fill="#0f172a"/>
+              <rect x="12" y="12" width="16" height="16" fill="#ffffff"/>
+              <rect x="16" y="16" width="8" height="8" fill="#0f172a"/>
+              <rect x="68" y="8" width="24" height="24" fill="#0f172a"/>
+              <rect x="72" y="12" width="16" height="16" fill="#ffffff"/>
+              <rect x="76" y="16" width="8" height="8" fill="#0f172a"/>
+              <rect x="8" y="68" width="24" height="24" fill="#0f172a"/>
+              <rect x="12" y="72" width="16" height="16" fill="#ffffff"/>
+              <rect x="16" y="76" width="8" height="8" fill="#0f172a"/>
+              <rect x="42" y="42" width="16" height="16" fill="#6366f1"/>
+              <circle cx="50" cy="50" r="4" fill="#ffffff"/>
+              <rect x="38" y="12" width="8" height="20" fill="#0f172a"/>
+              <rect x="12" y="38" width="20" height="8" fill="#0f172a"/>
+              <rect x="44" y="68" width="20" height="8" fill="#0f172a"/>
+              <rect x="68" y="44" width="8" height="20" fill="#0f172a"/>
+            </svg>
+          </div>
+          <p class="qr-help">Scan with Google Pay, PhonePe, Paytm, or BHIM</p>
+          <div class="upi-address-pill" id="lenderUpiAddress">UPI: lender@upi</div>
+        </div>
+
+        <div class="borrower-notification-box">
+          <div class="security-info-line">
+            ℹ️ <strong>Rule Notice:</strong> After you send the money via UPI or cash, click <strong>"Notify Lender I Paid"</strong>. The debt will be settled once the lender confirms receipt.
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="copyLenderUpiBtn">Copy UPI ID</button>
+          <button type="button" class="btn btn-primary" id="notifyLenderPaidBtn">Notify Lender I Paid 🔔</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. ADD FRIEND TO ROOM MODAL -->
+  <div class="modal-backdrop hidden" id="addFriendModal">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3>Add Friend to Room</h3>
+        <button class="modal-close" id="closeAddFriendBtn">&times;</button>
+      </div>
+
+      <form id="addFriendForm" class="modal-form">
+        <div class="form-group">
+          <label for="newFriendName">Friend's Name <span class="required">*</span></label>
+          <input type="text" id="newFriendName" class="form-control" placeholder="e.g. Vikram, Sneha, Rohan" required autofocus>
+        </div>
+
+        <div class="form-group">
+          <label for="newFriendUpi">UPI ID (Optional)</label>
+          <input type="text" id="newFriendUpi" class="form-control" placeholder="e.g. vikram@okhdfcbank or @phonepe">
+          <small class="text-subtle">Helps friends pay them directly with one click.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="newFriendPhone">Phone / WhatsApp (Optional)</label>
+          <input type="tel" id="newFriendPhone" class="form-control" placeholder="e.g. +91 98765 43210">
+        </div>
+
+        <div class="avatar-theme-picker">
+          <label>Pick Avatar Color:</label>
+          <div class="color-dots" id="friendColorDots">
+            <button type="button" class="color-dot active" data-color="#10b981" style="background:#10b981;"></button>
+            <button type="button" class="color-dot" data-color="#3b82f6" style="background:#3b82f6;"></button>
+            <button type="button" class="color-dot" data-color="#8b5cf6" style="background:#8b5cf6;"></button>
+            <button type="button" class="color-dot" data-color="#ec4899" style="background:#ec4899;"></button>
+            <button type="button" class="color-dot" data-color="#f59e0b" style="background:#f59e0b;"></button>
+            <button type="button" class="color-dot" data-color="#06b6d4" style="background:#06b6d4;"></button>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelAddFriendBtn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Friend to Room</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 4. ROOM MANAGER / SWITCHER MODAL -->
+  <div class="modal-backdrop hidden" id="roomManagerModal">
+    <div class="modal-box modal-lg" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3>Private Rooms</h3>
+        <button class="modal-close" id="closeRoomManagerBtn">&times;</button>
+      </div>
+
+      <div class="room-manager-body">
+        <div class="modal-tabs">
+          <button class="modal-tab active" id="tabCreateRoom">Create New Room</button>
+          <button class="modal-tab" id="tabJoinRoom">Join with Code</button>
+          <button class="modal-tab" id="tabMyRooms">Switch Room (<span id="savedRoomsBadge">1</span>)</button>
+        </div>
+
+        <!-- Panel 1: Create Room -->
+        <div class="panel-content active" id="panelCreateRoom">
+          <form id="createRoomForm" class="modal-form">
+            <div class="form-group">
+              <label for="createRoomName">Room Name <span class="required">*</span></label>
+              <input type="text" id="createRoomName" class="form-control" placeholder="e.g. Goa Trip 2026, Flat 402 Squad, College Gang" required>
+            </div>
+
+            <div class="form-group">
+              <label for="createYourName">Your Name <span class="required">*</span></label>
+              <input type="text" id="createYourName" class="form-control" placeholder="e.g. Rahul" required>
+            </div>
+
+            <div class="form-group">
+              <label for="createInitialFriends">Add Friends (Comma Separated)</label>
+              <input type="text" id="createInitialFriends" class="form-control" placeholder="e.g. Aryan, Vikram, Sneha">
+              <small class="text-subtle">You can also add more friends anytime later inside the room.</small>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Create Room & Get Code</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Panel 2: Join Room -->
+        <div class="panel-content" id="panelJoinRoom">
+          <form id="joinRoomForm" class="modal-form">
+            <div class="form-group">
+              <label for="joinRoomCodeInput">Room Code <span class="required">*</span></label>
+              <input type="text" id="joinRoomCodeInput" class="form-control" placeholder="e.g. ROOM-9142" style="text-transform: uppercase; font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.05em;" required>
+              <small class="text-subtle">Enter the 4-digit code given by your friend.</small>
+            </div>
+
+            <div class="form-group">
+              <label for="joinYourNameInput">Your Name <span class="required">*</span></label>
+              <input type="text" id="joinYourNameInput" class="form-control" placeholder="e.g. Sneha, Aryan, Vikram" required>
+              <small class="text-subtle">If you're already in this room, type your name to sign in. If you're new, you'll be automatically added!</small>
+            </div>
+
+            <div class="form-group">
+              <label for="joinYourUpiInput">Your UPI ID (Optional)</label>
+              <input type="text" id="joinYourUpiInput" class="form-control" placeholder="e.g. sneha@oksbi or 9876543210@paytm">
+              <small class="text-subtle">Makes it easy for friends to pay back what they owe you.</small>
+            </div>
+
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Join Room & Sync</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Panel 3: Saved Rooms -->
+        <div class="panel-content" id="panelMyRooms">
+          <div class="saved-rooms-list" id="savedRoomsList">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. ROOM CREATED CELEBRATION MODAL -->
+  <div class="modal-backdrop hidden" id="roomCreatedModal">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3>🎉 Room Ready to Share!</h3>
+        <button class="modal-close" id="closeRoomCreatedBtn">&times;</button>
+      </div>
+
+      <div class="modal-form room-created-success-box">
+        <p class="text-subtle">Your private ledger is live on the local network! Share the code or invite link with your friends to start adding debts:</p>
+
+        <div class="room-code-hero-box">
+          <span class="room-code-label">OFFICIAL ROOM CODE</span>
+          <span class="room-code-large-text" id="createdRoomCodeBig">ROOM-0000</span>
+          <span class="text-subtle" id="createdRoomNameSub">Friends Ledger</span>
+        </div>
+
+        <div class="room-share-input-group">
+          <input type="text" id="createdRoomLinkInput" class="form-control" readonly style="font-size:0.82rem; font-family:var(--font-mono);">
+          <button class="btn btn-secondary btn-sm" id="copyCreatedRoomLinkBtn">Copy Link</button>
+        </div>
+
+        <div style="display:flex; gap:0.75rem; width:100%; justify-content:center;">
+          <button class="btn btn-success w-100" id="shareCreatedWhatsAppBtn">
+            <span>💬 Share on WhatsApp</span>
+          </button>
+          <button class="btn btn-primary w-100" id="enterCreatedRoomBtn">
+            <span>Open Room Now 🚀</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. WELCOME GUEST / SWITCH USER MODAL -->
+  <div class="modal-backdrop hidden" id="welcomeJoinModal">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3 id="welcomeModalRoomTitle">Welcome to Friends Room 👋</h3>
+        <button class="modal-close" id="closeWelcomeModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-form">
+        <p class="text-subtle">Who are you in this room? Select your name to track who owes what:</p>
+
+        <div class="member-choice-grid" id="welcomeMemberList">
+          <!-- Populated by JS -->
+        </div>
+
+        <hr style="border:0; border-top:1px solid var(--border-subtle); margin:0.5rem 0;">
+
+        <form id="welcomeNewMemberForm">
+          <div class="form-group">
+            <label for="welcomeNewNameInput">Or join as a new friend:</label>
+            <div style="display:flex; gap:0.5rem;">
+              <input type="text" id="welcomeNewNameInput" class="form-control" placeholder="Your name (e.g. Rohan)" required>
+              <button type="submit" class="btn btn-primary" style="white-space:nowrap;">Join Room</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. INSTALL APP MODAL -->
+  <div class="modal-backdrop hidden" id="installAppModal">
+    <div class="modal-box" role="dialog" aria-modal="true">
+      <div class="modal-header">
+        <h3>Install RokkaLE App 📲</h3>
+        <button class="modal-close" id="closeInstallModalBtn">&times;</button>
+      </div>
+
+      <div class="modal-form" style="text-align: center; gap: 1rem;">
+        <div style="margin-bottom: 0.25rem; display: flex; justify-content: center;">
+          <div class="brand-icon modal-icon-lg">
+            <img src="app-icon.png?v=4" alt="RokkaLE" class="brand-app-img" style="border-radius: 18px;">
+          </div>
+        </div>
+        <h4>Install as a Mobile or Desktop App</h4>
+        <p class="text-subtle">Use RokkaLE with your friends in full-screen standalone mode without any browser address bar. Works completely offline!</p>
+
+        <div id="pwaNativeInstallArea">
+          <button class="btn btn-primary btn-record w-100" id="triggerNativeInstallBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Install RokkaLE Now</span>
+          </button>
+        </div>
+
+        <div class="security-info-line" style="text-align: left; margin-top: 0.5rem;">
+          <strong>💡 Tips for Friends:</strong>
+          <ul style="padding-left: 1.2rem; margin-top: 0.35rem; font-size: 0.8rem; line-height: 1.6;">
+            <li><strong>iPhone / iPad:</strong> Tap the <em>Share icon</em> (⎋) in Safari, then tap <strong>"Add to Home Screen"</strong> (⊞).</li>
+            <li><strong>Android:</strong> Tap <em>Install</em> above or open Chrome menu (⋮) and tap <strong>"Install app"</strong>.</li>
+            <li><strong>Windows PC:</strong> Run <a href="file:///C:/Users/USER/.gemini/antigravity-ide/scratch/tabmate/Launch-RokkaLE.bat" style="color:var(--accent-primary);">Launch-RokkaLE.bat</a> to open as a native frameless desktop app.</li>
+          </ul>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelInstallBtn">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script src="app.js?v=4"></script>
+</body>
+</html>
